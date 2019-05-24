@@ -1,11 +1,13 @@
 import time
 from datetime import datetime
+from collector.sensor import bme280_sensor
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
 def tick():
     print('Tick! The time is: %s' % datetime.now())
+    print(bme280_sensor.poll())
 
 
 def start():
