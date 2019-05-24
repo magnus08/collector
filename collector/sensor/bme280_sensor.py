@@ -92,16 +92,16 @@ def _read_all():
 
 def _read_humidity(data=None):
     if data is None:
-        data = read_adc()
+        data = _read_adc()
 
     # We need a temperature reading to calculate humidity
-    read_temperature(data)
-    return compensate_humidity(data.humidity)
+    _read_temperature(data)
+    return _compensate_humidity(data.humidity)
 
 
 def _read_pressure(data=None):
     if data is None:
-        data = read_adc()
+        data = _read_adc()
 
     # We need a temperature reading to calculate pressure
     _read_temperature(data)
