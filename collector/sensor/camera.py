@@ -8,19 +8,17 @@ originally wrote bme280_sample.py)
 
 
 from picamera import PiCamera
-#from time import sleep
 import time
 
 
 
 
 def snap():
-    camera = PiCamera()
+    with PiCamera() as camera:
+        camera.start_preview()
+        time.sleep(5)
 
-    camera.start_preview()
-    time.sleep(5)
-
-    filename = time.strftime("%Y%m%d-%H%M%S.jpg")
-    camera.capture(filename)
-    camera.stop_preview()
-    return filename
+        filename = time.strftime("%Y%m%d-%H%M%S.jpg")
+        camera.capture(filename)
+        camera.stop_preview()
+        return filename
