@@ -1,6 +1,9 @@
 from collector import collect
 import os
 from flask import Flask
+from flask import jsonify
+
+from collector.sensor import bme280_sensor
 
 
 def run():
@@ -19,8 +22,9 @@ def run():
     except OSError:
         pass
 
-    @app.route('/hello')
+    @app.route('/sensor')
     def hello():
-        return "Hi"
+        return jsonify(bme280_sensor.poll())
+
 
     app.run(debug=True, host='0.0.0.0')
