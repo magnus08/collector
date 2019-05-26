@@ -193,11 +193,15 @@ def _setup():
 
 
 def poll(i2c_address=0x76, i2c_bus=1):
-    bme280_i2c.set_default_i2c_address(i2c_address)
-    bme280_i2c.set_default_bus(i2c_bus)
+    try:
+        bme280_i2c.set_default_i2c_address(i2c_address)
+        bme280_i2c.set_default_bus(i2c_bus)
 
-    _setup()
-    return _read_all()
+        _setup()
+        return _read_all()
+    except RuntimeError:
+        return Data(0, 0, 0)
+
 
     # print("%7.2f hPa" % data_all.pressure)
     # print("%7.2f %%" % data_all.humidity)
