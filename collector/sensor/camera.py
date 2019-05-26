@@ -9,11 +9,10 @@ originally wrote bme280_sample.py)
 try:
     from picamera import PiCamera
 except ImportError:
+    PiCamera = None
     print("Camera not supported")
 
 import time
-
-
 
 
 def snap():
