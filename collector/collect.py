@@ -24,10 +24,10 @@ def start():
     scheduler.add_job(snap_image, 'interval', seconds=60)
     scheduler.start()
 
-    try:
-        # This is here to simulate application activity (which keeps the main thread alive).
-        while True:
-            time.sleep(2)
-    except (KeyboardInterrupt, SystemExit):
-        print("Shutting down")
-        scheduler.shutdown()
+    # try:
+    #     # This is here to simulate application activity (which keeps the main thread alive).
+    #     while True:
+    #         time.sleep(2)
+    # except (KeyboardInterrupt, SystemExit):
+    #     print("Shutting down")
+    #     scheduler.shutdown()
