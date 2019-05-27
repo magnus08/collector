@@ -1,10 +1,10 @@
-import time
 from datetime import datetime
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from collector.sensor import bme280_sensor
 from collector.sensor import camera
 from collector.sensor import status
-
-from apscheduler.schedulers.background import BackgroundScheduler
 
 
 def poll_bme280():
@@ -30,11 +30,3 @@ def start():
     scheduler.add_job(collect_status, 'interval', seconds=10)
     scheduler.add_job(snap_image, 'interval', seconds=60)
     scheduler.start()
-
-    # try:
-    #     # This is here to simulate application activity (which keeps the main thread alive).
-    #     while True:
-    #         time.sleep(2)
-    # except (KeyboardInterrupt, SystemExit):
-    #     print("Shutting down")
-    #     scheduler.shutdown()
