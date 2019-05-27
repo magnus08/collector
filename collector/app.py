@@ -28,7 +28,7 @@ def run():
     def sensor():
         return jsonify(bme280_sensor.poll())
 
-    @app.route('/stat')
+    @app.route('/status')
     def stat():
         return jsonify(status.status())
 
