@@ -2,8 +2,9 @@ from collector import collect
 import os
 from flask import Flask
 from flask import jsonify
-
+from collections import namedtuple
 from collector.sensor import bme280_sensor
+from collector.sensor import status
 
 
 def run():
@@ -23,8 +24,12 @@ def run():
         pass
 
     @app.route('/sensor')
-    def hello():
+    def sensor():
         return jsonify(bme280_sensor.poll())
+
+    @app.route('/stat')
+    def stat():
+        return jsonify(status.status())
 
 
     app.run(debug=True, host='0.0.0.0')
