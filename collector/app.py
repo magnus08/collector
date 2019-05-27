@@ -1,8 +1,9 @@
-from collector import collect
 import os
+
 from flask import Flask
 from flask import jsonify
-from collections import namedtuple
+
+from collector import collect
 from collector.sensor import bme280_sensor
 from collector.sensor import status
 
