@@ -14,16 +14,15 @@ def snap():
             camera.start_preview()
             time.sleep(5)
 
-
             filename = time.strftime("%Y%m%d-%H%M%S.jpg")
             camera.capture(filename)
             camera.stop_preview()
             return {
                 "filename": filename,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now()
             }
     else:
         return {
             "filename": "",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now()
         }

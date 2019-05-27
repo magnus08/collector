@@ -6,23 +6,24 @@
 # sqlite3 collector.db
 
 CREATE table bme(
-  id int primary key not null,
+  id integer primary key autoincrement not null,
   humidity real,
   pressure real,
   temperature real,
-  timestamp integer
+  timestamp real
   );
 
 CREATE table camera(
-  id int primary key not null,
+  id integer primary key autoincrement not null,
   filename char(50),
-  timestamp integer
+  timestamp real
   );
 
 CREATE table status(
-  id int primary key not null,
+  id integer primary key autoincrement not null,
   size integer,
   free integer,
-  timestamp integer
+  timestamp real
   );
+
 ```

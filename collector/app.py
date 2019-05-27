@@ -32,5 +32,4 @@ def run():
     def stat():
         return jsonify(status.status())
 
-
     app.run(debug=True, host='0.0.0.0')
