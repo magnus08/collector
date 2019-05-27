@@ -13,6 +13,7 @@ except ImportError:
     print("Camera not supported")
 
 import time
+from datetime import datetime
 
 
 def snap():
@@ -21,9 +22,16 @@ def snap():
             camera.start_preview()
             time.sleep(5)
 
+
             filename = time.strftime("%Y%m%d-%H%M%S.jpg")
             camera.capture(filename)
             camera.stop_preview()
-            return filename
+            return {
+                "filename": filename,
+                "timestamp": datetime.now().isoformat()
+            }
     else:
-        return ""
+        return {
+            "filename": "",
+            "timestamp": datetime.now().isoformat()
+        }

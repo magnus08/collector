@@ -7,6 +7,7 @@ originally wrote bme280_sample.py)
 """
 
 from collections import namedtuple
+from datetime import datetime
 
 from bme280 import bme280_i2c
 
@@ -83,11 +84,12 @@ def _read_adc():
 
 def _read_all():
     data = _read_adc()
-    return Data(
-        _read_humidity(data),
-        _read_pressure(data),
-        _read_temperature(data)
-    )
+    return {
+        "humidity": _read_humidity(data),
+        "pressure": _read_pressure(data),
+        "temperature": _read_temperature(data),
+        "timestamp": datetime.now().isoformat()
+    }
 
 
 def _read_humidity(data=None):
@@ -200,9 +202,9 @@ def poll(i2c_address=0x76, i2c_bus=1):
         _setup()
         return _read_all()
     except RuntimeError:
-        return Data(0, 0, 0)
-
-
-    # print("%7.2f hPa" % data_all.pressure)
-    # print("%7.2f %%" % data_all.humidity)
-    # print("%7.2f C" % data_all.temperature)
+        return {
+            "humidity": 0,  # %
+            "pressure": 0,  # hPa
+            "temperature": 0,  # C
+            "timestamp": datetime.now().isoformat()
+        }
