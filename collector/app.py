@@ -9,27 +9,31 @@ from collector.sensor import status
 
 
 def run():
-    collect.start()
 
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
+    print("***Run")
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        print("***First startup")
+        collect.start()
+
+    fapp = Flask(__name__, instance_relative_config=True)
+    fapp.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'collect.sqlite')
+        DATABASE=os.path.join(fapp.instance_path, 'collect.sqlite')
     )
 
-    app.config.from_pyfile('config.py', silent=True)
+    fapp.config.from_pyfile('config.py', silent=True)
 
     try:
-        os.makedirs(app.instance_path)
+        os.makedirs(fapp.instance_path)
     except OSError:
         pass
 
-    @app.route('/sensor')
+    @fapp.route('/sensor')
     def sensor():
         return jsonify(bme280_sensor.poll())
 
-    @app.route('/status')
+    @fapp.route('/status')
     def stat():
         return jsonify(status.status())
 
-    app.run(debug=True, host='0.0.0.0')
+    fapp.run(debug=True, host='0.0.0.0')
