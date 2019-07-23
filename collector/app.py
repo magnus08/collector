@@ -1,11 +1,14 @@
 import os
+from datetime import datetime
 
 from flask import Flask
 from flask import jsonify
+from flask import send_file
 
 from collector import collect
 from collector.sensor import bme280_sensor
 from collector.sensor import status
+from collector.sensor import camera
 
 
 def run():
@@ -31,6 +34,12 @@ def run():
     @fapp.route('/sensor')
     def sensor():
         return jsonify(bme280_sensor.poll())
+
+    @fapp.route('/snap')
+    def snap():
+        print('Snapping image at %s' % datetime.now())
+        v = camera.snap()
+        return send_file(v["filename"])
 
     @fapp.route('/status')
     def stat():
