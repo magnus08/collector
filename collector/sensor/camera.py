@@ -14,7 +14,7 @@ def snap():
             camera.start_preview()
             time.sleep(5)
 
-            filename = time.strftime("%Y%m%d-%H%M%S.jpg")
+            filename = time.strftime("/store/images/%Y%m%d-%H%M%S.jpg")
             camera.capture(filename)
             camera.stop_preview()
             return {
