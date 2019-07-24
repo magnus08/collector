@@ -88,7 +88,7 @@ def _read_all():
         "humidity": _read_humidity(data),
         "pressure": _read_pressure(data),
         "temperature": _read_temperature(data),
-        "timestamp": datetime.now()
+        "timestamp": datetime.now().isoformat()
     }
 
 
@@ -206,5 +206,5 @@ def poll(i2c_address=0x76, i2c_bus=1):
             "humidity": 0,  # %
             "pressure": 0,  # hPa
             "temperature": 0,  # C
-            "timestamp": datetime.now()
+            "timestamp": datetime.now().isoformat()
         }

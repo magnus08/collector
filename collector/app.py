@@ -1,15 +1,19 @@
 import os
+import sqlite3
 from datetime import datetime
 
+import dateutil.parser
 from flask import Flask
 from flask import jsonify
+from flask import request
 from flask import send_file
 
 from collector import collect
 from collector.sensor import bme280_sensor
-from collector.sensor import status
 from collector.sensor import camera
+from collector.sensor import status
 
+db_name = '/store/collector.db' # TODO: Share this
 
 def run():
 
@@ -33,7 +37,34 @@ def run():
 
     @fapp.route('/sensor')
     def sensor():
-        return jsonify(bme280_sensor.poll())
+        # print(request.form["from"])
+        if request.args.get('from'):
+            from_date_str = request.args.get('from', '')
+            from_date = dateutil.parser.parse(from_date_str)
+            to_date_str = request.args.get('to', '')
+            to_date = dateutil.parser.parse(to_date_str) if to_date_str else datetime.now()
+            print("Date: {}".format(from_date_str))
+            db = sqlite3.connect(db_name)
+            cursor = db.cursor()
+            cursor.execute("SELECT humidity, pressure, temperature, timestamp FROM bme WHERE timestamp BETWEEN (?) AND (?)",
+                           (from_date.timestamp(), to_date.timestamp()))
+            rows = cursor.fetchall()
+
+            print("Rows {}".format(rows))
+            r = [{
+                "humidity": row[0],
+                "pressure": row[1],
+                "temperature": row[2],
+                "timestamp": datetime.fromtimestamp(row[3]).isoformat()
+            } for row in rows]
+
+            cursor.connection.close()
+
+            print(r)
+            return jsonify(r)
+        else:
+            print("No date")
+            return jsonify(bme280_sensor.poll())
 
     @fapp.route('/snap')
     def snap():

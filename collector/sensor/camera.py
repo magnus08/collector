@@ -19,10 +19,10 @@ def snap():
             camera.stop_preview()
             return {
                 "filename": filename,
-                "timestamp": datetime.now()
+                "timestamp": datetime.now().isoformat()
             }
     else:
         return {
             "filename": "",
-            "timestamp": datetime.now()
+            "timestamp": datetime.now().isoformat()
         }
