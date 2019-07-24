@@ -43,28 +43,29 @@ def run():
             from_date = dateutil.parser.parse(from_date_str)
             to_date_str = request.args.get('to', '')
             to_date = dateutil.parser.parse(to_date_str) if to_date_str else datetime.now()
-            print("Date: {}".format(from_date_str))
             db = sqlite3.connect(db_name)
             cursor = db.cursor()
             cursor.execute("SELECT humidity, pressure, temperature, timestamp FROM bme WHERE timestamp BETWEEN (?) AND (?)",
                            (from_date.timestamp(), to_date.timestamp()))
             rows = cursor.fetchall()
+            cursor.connection.close()
 
-            print("Rows {}".format(rows))
             r = [{
                 "humidity": row[0],
                 "pressure": row[1],
                 "temperature": row[2],
                 "timestamp": datetime.fromtimestamp(row[3]).isoformat()
             } for row in rows]
-
-            cursor.connection.close()
-
-            print(r)
             return jsonify(r)
         else:
             print("No date")
-            return jsonify(bme280_sensor.poll())
+            poll = bme280_sensor.poll()
+            return jsonify({
+                "humidity": poll["humidity"],
+                "pressure": poll["pressure"],
+                "temperature": poll["temperature"],
+                "timestamp": poll["timestamp"].isoformat()
+            })
 
     @fapp.route('/snap')
     def snap():
@@ -74,6 +75,11 @@ def run():
 
     @fapp.route('/status')
     def stat():
-        return jsonify(status.status())
+        res = status.status()
+        return jsonify({
+            "size": res["size"],
+            "free": res["free"],
+            "timestamp": res["timestamp"].isoformat()
+        })
 
     fapp.run(debug=True, host='0.0.0.0')
