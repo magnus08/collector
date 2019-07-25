@@ -1,5 +1,4 @@
 import os
-import sqlite3
 from datetime import datetime
 
 import dateutil.parser
@@ -9,11 +8,21 @@ from flask import request
 from flask import send_file
 
 from collector import collect
+from collector.db import get_db
 from collector.sensor import bme280_sensor
 from collector.sensor import camera
 from collector.sensor import status
 
-db_name = '/store/collector.db' # TODO: Share this
+
+def get_range(request):
+    if request.args.get('from'):
+        from_date_str = request.args.get('from', '')
+        from_date = dateutil.parser.parse(from_date_str)
+        to_date_str = request.args.get('to', '')
+        to_date = dateutil.parser.parse(to_date_str) if to_date_str else datetime.now()
+        return from_date, to_date
+    else:
+        return None, None
 
 def run():
 
@@ -37,13 +46,9 @@ def run():
 
     @fapp.route('/sensor')
     def sensor():
-        # print(request.form["from"])
-        if request.args.get('from'):
-            from_date_str = request.args.get('from', '')
-            from_date = dateutil.parser.parse(from_date_str)
-            to_date_str = request.args.get('to', '')
-            to_date = dateutil.parser.parse(to_date_str) if to_date_str else datetime.now()
-            db = sqlite3.connect(db_name)
+        from_date, to_date = get_range(request)
+        if from_date:
+            db = get_db()
             cursor = db.cursor()
             cursor.execute("SELECT humidity, pressure, temperature, timestamp FROM bme WHERE timestamp BETWEEN (?) AND (?)",
                            (from_date.timestamp(), to_date.timestamp()))
@@ -58,7 +63,6 @@ def run():
             } for row in rows]
             return jsonify(r)
         else:
-            print("No date")
             poll = bme280_sensor.poll()
             return jsonify({
                 "humidity": poll["humidity"],
@@ -73,13 +77,62 @@ def run():
         v = camera.snap()
         return send_file(v["filename"])
 
+    @fapp.route('/image/<filename>')
+    @fapp.route('/image')
+    def image(filename):
+        if filename:
+            if filename.startswith("/store"):  # TODO: Should filter out other stuff too for safety, like ..
+                return send_file(filename)
+            else:
+                raise Exception("Illegal file name")
+        else:
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("SELECT filename, timestamp FROM camera ORDER BY timestamp DESC LIMIT 1")
+            row = cursor.fetchone()
+
+            cursor.connection.close()
+
+
+    @fapp.route('/images')
+    def images():
+        from_date, to_date = get_range(request)
+        if from_date:
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("SELECT filename, timestamp FROM camera WHERE timestamp BETWEEN (?) AND (?)",
+                           (from_date.timestamp(), to_date.timestamp()))
+            rows = cursor.fetchall()
+            print("+++ files = ", rows)
+            cursor.connection.close()
+
+            return jsonify([{
+                "filename": row[0],
+                "timestamp": datetime.fromtimestamp(row[1]).isoformat()
+            } for row in rows])
+
     @fapp.route('/status')
     def stat():
-        res = status.status()
-        return jsonify({
-            "size": res["size"],
-            "free": res["free"],
-            "timestamp": res["timestamp"].isoformat()
-        })
+        from_date, to_date = get_range(request)
+        if from_date:
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("SELECT size, free, timestamp FROM status WHERE timestamp BETWEEN (?) AND (?)",
+                           (from_date.timestamp(), to_date.timestamp()))
+            rows = cursor.fetchall()
+            cursor.connection.close()
+
+            return jsonify([{
+                "size": row[0],
+                "free": row[1],
+                "timestamp": datetime.fromtimestamp(row[2]).isoformat()
+            } for row in rows])
+        else:
+            res = status.status()
+            return jsonify({
+                "size": res["size"],
+                "free": res["free"],
+                "timestamp": res["timestamp"].isoformat()
+            })
 
     fapp.run(debug=True, host='0.0.0.0')

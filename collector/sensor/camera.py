@@ -1,3 +1,5 @@
+from collector.config import config
+
 try:
     from picamera import PiCamera
 except ImportError:
@@ -14,8 +16,8 @@ def snap():
             camera.start_preview()
             time.sleep(5)
 
-            filename = time.strftime("/store/images/%Y%m%d-%H%M%S.jpg")
-            camera.capture(filename)
+            filename = time.strftime("%Y%m%d-%H%M%S.jpg")
+            camera.capture("{}/{}".format(config['image_store'], filename))
             camera.stop_preview()
             return {
                 "filename": filename,

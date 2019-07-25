@@ -1,0 +1,2 @@
+database: /store/collector.db
+image_store: /store/images

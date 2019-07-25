@@ -198,5 +198,5 @@ setup(
         # 'Funding': 'https://donate.pypi.org',
         # 'Say Thanks!': 'http://saythanks.io/to/example',
         # 'Source': 'https://github.com/pypa/sampleproject/',
-    },
+    }, install_requires=['yaml']
 )
