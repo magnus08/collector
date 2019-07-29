@@ -12,7 +12,7 @@ from collector.db import get_db
 from collector.sensor import bme280_sensor
 from collector.sensor import camera
 from collector.sensor import status
-
+from collector.config import config
 
 def get_range(request):
     if request.args.get('from'):
@@ -81,10 +81,8 @@ def run():
     @fapp.route('/image')
     def image(filename):
         if filename:
-            if filename.startswith("/store"):  # TODO: Should filter out other stuff too for safety, like ..
-                return send_file(filename)
-            else:
-                raise Exception("Illegal file name")
+            full_filename = "{}/{}".format(config['image_store'], filename)
+            return send_file(full_filename)
         else:
             db = get_db()
             cursor = db.cursor()
