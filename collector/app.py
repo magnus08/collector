@@ -13,6 +13,7 @@ from collector.sensor import bme280_sensor
 from collector.sensor import camera
 from collector.sensor import status
 from collector.config import config
+from flask_cors import CORS, cross_origin
 
 def get_range(request):
     if request.args.get('from'):
@@ -32,7 +33,9 @@ def run():
         collect.start()
 
     fapp = Flask(__name__, instance_relative_config=True)
+    cors = CORS(fapp)
     fapp.config.from_mapping(
+        CORS_HEADERS='Content-Type',
         SECRET_KEY='dev',
         DATABASE=os.path.join(fapp.instance_path, 'collect.sqlite')
     )
