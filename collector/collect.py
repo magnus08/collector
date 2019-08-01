@@ -45,7 +45,7 @@ def start():
     print("Starting up")
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(poll_bme280, 'interval', seconds=15)
-    scheduler.add_job(collect_status, 'interval', seconds=10)
-    scheduler.add_job(snap_image, 'interval', seconds=60)
+    scheduler.add_job(poll_bme280, 'interval', seconds=600)
+    scheduler.add_job(collect_status, 'interval', seconds=610)
+    scheduler.add_job(snap_image, 'interval', seconds=620)
     scheduler.start()

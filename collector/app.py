@@ -80,20 +80,21 @@ def run():
         v = camera.snap()
         return send_file(v["filename"])
 
-    @fapp.route('/image/<filename>')
     @fapp.route('/image')
+    def lastImage():
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT filename, timestamp FROM camera ORDER BY timestamp DESC LIMIT 1")
+        row = cursor.fetchone()
+        cursor.connection.close()
+        print(row[0])
+        full_filename = "{}/{}".format(config['image_store'], row[0])
+        return send_file(full_filename)
+
+    @fapp.route('/image/<filename>')
     def image(filename):
-        if filename:
-            full_filename = "{}/{}".format(config['image_store'], filename)
-            return send_file(full_filename)
-        else:
-            db = get_db()
-            cursor = db.cursor()
-            cursor.execute("SELECT filename, timestamp FROM camera ORDER BY timestamp DESC LIMIT 1")
-            row = cursor.fetchone()
-
-            cursor.connection.close()
-
+        full_filename = "{}/{}".format(config['image_store'], filename)
+        return send_file(full_filename)
 
     @fapp.route('/images')
     def images():

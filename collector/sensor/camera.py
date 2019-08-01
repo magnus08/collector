@@ -13,6 +13,7 @@ from datetime import datetime
 def snap():
     if PiCamera:
         with PiCamera() as camera:
+            camera.resolution = (1024, 768)
             camera.start_preview()
             time.sleep(5)
 
